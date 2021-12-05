@@ -1,0 +1,124 @@
+﻿<!doctype html>
+<html>
+<head>
+<title>Subtitles Sync Tool</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<style>
+body {
+      margin:0px;
+      background:#3f3f3f;
+      font-family:Roboto;
+      overflow:hidden;
+}
+textarea {
+      color:#FFF;
+      margin:0px;
+      border:none;
+      outline:none;
+      background:rgba(0,0,0,0.3);
+      padding:0px;
+      line-height:25px;
+      font-family:Roboto;
+      padding:6px 10px;
+      width:100%;
+      font-size:11px;
+}
+#time {
+      width:100%;
+      color:#FFF;
+      margin:0px;
+      border:none;
+      outline:none;
+      background:rgba(0,0,0,0.3);
+      padding:0px;
+      line-height:25px;
+      font-family:Roboto;
+      padding:6px 10px;
+      border-top:1px solid #111;
+}
+#txt_b {border-top:1px solid #111;}
+</style>
+</head>
+<body onresize="rz()" onload="rz()">
+
+<textarea id="txt_a" onkeyup="sync()" placeholder="Input SRT Subtitle Text"></textarea>
+<input type="text" id="time" placeholder="Sync Time (in Mili Sec.)" onkeyup="sync()">
+<textarea id="txt_b" placeholder="Output Subtitles"></textarea>
+
+<script>
+function id(x) {return document.getElementById(x);}
+
+function isTimeType(t) {
+      var a = t.indexOf('--'+'>');
+      if(a==-1) {return false;}
+      if(t.split(':').length==5) {return true;}
+      if(t[a+6]==':' || t[a+5]==':') {return true;}
+      return false;
+}
+
+function sync() {
+      var l = id('txt_a').value.split('\n');
+      var x = '';
+      for(i=0;i<l.length;i++) {
+            if(isTimeType(l[i])) {
+                  x += sy(l[i]) + '\n';
+            }
+            else {x += l[i] + '\n';}
+      }
+      id('txt_b').value = x.substr(0,x.length-1);
+}
+
+function sy(t) {
+      t = t.split('--'+'>');
+      var t1 = shf(t[0]);
+      var t2 = shf(t[1]);
+      return t1 + ' --'+'> ' + t2;
+}
+
+function shf(t) {
+      var h = parseInt(t.split(':')[0]);
+      var m = parseInt(t.split(':')[1]);
+      var s = parseInt(t.split(':')[2].split(',')[0]);
+      var i = parseInt(t.split(':')[2].split(',')[1]);
+
+      var x = 0;
+      x += (h*60*60*1000);
+      x += (m*60*1000);
+
+      x += (s*1000);
+      x += i
+ var st  = parseInt(id('time').value);
+ if(st==NaN) {st = 0;}
+ x += st;
+
+ h = parseInt((x/(60*60*1000)).toString().split('.')[0]);
+ x -= (h*60*60*1000);
+ m = parseInt((x/(60*1000)).toString().split('.')[0]);
+ x -= (m*60*1000);
+ s = parseInt((x/(1000)).toString().split('.')[0]);
+ x -= (s*1000);
+ i = x;
+
+ h = frm(h,2);
+ m = frm(m,2);
+ s = frm(s,2);
+ i = frm(i,3);
+
+ return h + ':' + m + ':' + s + ',' + i;
+}
+
+function frm(x,d) {
+      x = x.toString();
+      while(x.length<d) {x = '0' + x;}
+      return x;
+}
+
+function rz() {
+      var h = (window.innerHeight + 40) / 2;
+      id('txt_a').style.height = h + 'px';
+      id('txt_b').style.height = h + 'px';
+}
+</script>
+</body>
+</html>
